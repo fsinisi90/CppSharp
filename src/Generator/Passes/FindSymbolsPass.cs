@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using CppSharp.AST;
+using CppSharp.Parser;
 
 namespace CppSharp.Passes
 {
@@ -101,7 +102,13 @@ namespace CppSharp.Passes
                 return false;
             }
 
-            mangledDecl.Mangled = symbol;
+            // macOS: the symbol name passed to dlsym() must NOT be prepended with an underscore
+            // https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man3/dlsym.3.html
+            if (!(mangledDecl is Variable) ||
+                !TargetTriple.IsMacOS(Context.ParserOptions.TargetTriple) ||
+                '_' + mangledDecl.Mangled != symbol)
+                mangledDecl.Mangled = symbol;
+
             return true;
         }
 
