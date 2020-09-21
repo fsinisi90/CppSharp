@@ -47,14 +47,10 @@ namespace CppSharp.Types
                         typeMap.Context = bindingContext;
                         typeMap.TypeMapDatabase = this;
 
-                        try
+                        // Custom types won't be overwritten by CppSharp ones.
+                        if (!TypeMaps.ContainsKey(attr.Type))
                         {
-                            this.TypeMaps.Add(attr.Type, typeMap);
-                        }
-                        catch (ArgumentException)
-                        {
-                            // The type won't be added if it already exists
-                            // In this way, custom types won't be overwritten by CppSharp ones
+                            TypeMaps.Add(attr.Type, typeMap);
                         }
                     }
                 }
